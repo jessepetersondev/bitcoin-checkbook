@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hodlscope - Your Bitcoin Portfolio in Focus</title>
-    <link rel="icon" type="image/png" href="assets/logos/hodlscope-icon.png">
+    <title>BitObserver - Your Bitcoin Portfolio Observer</title>
+    <link rel="icon" type="image/png" href="assets/logos/bitobserver-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -14,13 +14,44 @@
                     colors: {
                         bitcoin: '#f7931a',
                         'bitcoin-dark': '#e8851a',
-                        'hodl-blue': '#1E3A8A',
-                        'hodl-blue-dark': '#1E40AF',
-                        'hodl-gray': '#374151'
+                        'observer-blue': '#1E3A8A',
+                        'observer-blue-dark': '#1E40AF',
+                        'observer-navy': '#0F172A',
+                        'observer-gray': '#374151',
+                        'accent-purple': '#8B5CF6',
+                        'accent-cyan': '#06B6D4'
                     },
                     backgroundImage: {
-                        'hero-pattern': "url('assets/backgrounds/hero-background.png')",
-                        'hero-pattern-dark': "url('assets/backgrounds/hero-background-dark.png')"
+                        'hero-gradient': 'linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%)',
+                        'hero-gradient-dark': 'linear-gradient(135deg, #0F172A 0%, #000000 100%)',
+                        'card-gradient': 'linear-gradient(135deg, #f7931a 0%, #e8851a 100%)',
+                        'card-gradient-blue': 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%)',
+                        'card-gradient-green': 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        'card-gradient-purple': 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)'
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'fade-in': 'fadeIn 0.6s ease-out'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(247, 147, 26, 0.3)' },
+                            '100%': { boxShadow: '0 0 30px rgba(247, 147, 26, 0.6)' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        }
                     }
                 }
             }
@@ -46,631 +77,813 @@
         }
 
         .hero-section {
-            background-image: url('assets/backgrounds/hero-background.png');
+            background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('assets/backgrounds/hero-background-modern.png');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
+            opacity: 0.3;
+            z-index: 1;
         }
 
         .dark .hero-section {
-            background-image: url('assets/backgrounds/hero-background-dark.png');
+            background: linear-gradient(135deg, #0F172A 0%, #000000 100%);
         }
 
-        .logo-hover {
-            transition: transform 0.3s ease;
+        .dark .hero-section::before {
+            background-image: url('assets/backgrounds/hero-background-dark-modern.png');
+            opacity: 0.4;
         }
 
-        .logo-hover:hover {
-            transform: scale(1.05);
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
-        .card-hover {
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
         }
 
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        .dark .glass-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .dark .card-hover:hover {
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .glass-card:hover {
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .gradient-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .gradient-card:hover::before {
+            left: 100%;
+        }
+
+        .gradient-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-hover {
+            transition: all 0.3s ease;
+        }
+
+        .logo-hover:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .glow-effect {
+            animation: glow 2s ease-in-out infinite alternate;
         }
 
         .gradient-text {
-            background: linear-gradient(135deg, #1E3A8A, #f7931a);
+            background: linear-gradient(135deg, #1E3A8A, #f7931a, #8B5CF6);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .bitcoin-accent {
             position: relative;
         }
 
-        .bitcoin-accent::before {
+        .bitcoin-accent::after {
             content: '';
             position: absolute;
-            top: -10px;
-            right: -10px;
-            width: 20px;
-            height: 20px;
-            background-image: url('assets/icons/bitcoin-accent.png');
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background-image: url('assets/icons/bitcoin-accent-modern.png');
             background-size: contain;
             background-repeat: no-repeat;
-            opacity: 0.7;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .modern-input {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .modern-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #f7931a;
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
+            outline: none;
+        }
+
+        .dark .modern-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .dark .modern-input:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: #f7931a;
+        }
+
+        .modern-button {
+            background: linear-gradient(135deg, #f7931a 0%, #e8851a 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modern-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .modern-button:hover::before {
+            left: 100%;
+        }
+
+        .modern-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(247, 147, 26, 0.4);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #f7931a, transparent);
+            margin: 2rem 0;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dark .stats-card {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .slide-in {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #f7931a, #e8851a);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #e8851a, #d97706);
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
+    <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center space-x-4">
-                    <img src="assets/logos/hodlscope-icon.png" alt="Hodlscope" class="w-12 h-12 logo-hover">
-                    <div>
-                        <h1 class="text-2xl font-bold text-hodl-blue dark:text-white">
-                            Hodlscope
-                        </h1>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Your Bitcoin Portfolio in Focus</p>
-                    </div>
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3 logo-hover">
+                    <img src="assets/logos/bitobserver-main-logo.png" alt="BitObserver" class="h-10 w-auto dark:hidden">
+                    <img src="assets/logos/bitobserver-logo-dark.png" alt="BitObserver" class="h-10 w-auto hidden dark:block">
                 </div>
-                <button id="darkModeToggle" class="p-3 rounded-lg text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                </button>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-110">
+                        <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                        </svg>
+                        <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-section bg-gradient-to-r from-hodl-blue to-blue-600 dark:from-gray-800 dark:to-gray-900 text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                Bitcoin <span class="text-bitcoin">Portfolio Tracking</span>
-            </h2>
-            <p class="text-xl text-blue-100 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-                Monitor your Bitcoin addresses, track UTXOs, and achieve your savings goal.
-            </p>
-            <div class="flex justify-center space-x-8 text-center">
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                    <div class="text-2xl font-bold text-bitcoin">Watch-Only</div>
-                    <div class="text-sm text-blue-100">Secure Monitoring</div>
+    <section class="hero-section min-h-screen flex items-center justify-center text-white relative">
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="floating-element">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 gradient-text">
+                    Bitcoin
+                    <span class="block">Portfolio Observer</span>
+                </h1>
+            </div>
+            <!-- <p class="text-xl md:text-2xl mb-12 text-gray-200 max-w-3xl mx-auto leading-relaxed fade-in">
+                Monitor your Bitcoin addresses, track UTXOs, and achieve your savings goals.
+            </p> -->
+            
+            <!-- Feature Cards -->
+            <div class="grid md:grid-cols-3 gap-8 mb-16 fade-in">
+                <div class="glass-card rounded-2xl p-6 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-bitcoin to-bitcoin-dark rounded-full flex items-center justify-center mx-auto mb-4 glow-effect">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-bitcoin">Watch-Only</h3>
+                    <p class="text-gray-300">Secure Monitoring</p>
                 </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                    <div class="text-2xl font-bold text-bitcoin">Multi-Address</div>
-                    <div class="text-sm text-blue-100">Portfolio Tracking</div>
+                
+                <div class="glass-card rounded-2xl p-6 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-observer-blue to-observer-blue-dark rounded-full flex items-center justify-center mx-auto mb-4 floating-element">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-observer-blue">Multi-Address</h3>
+                    <p class="text-gray-300">Portfolio Tracking</p>
                 </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                    <div class="text-2xl font-bold text-bitcoin">Savings Goals</div>
-                    <div class="text-sm text-blue-100">Progress Tracking</div>
+                
+                <div class="glass-card rounded-2xl p-6 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-accent-purple to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 pulse-animation">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-accent-purple">Savings Goals</h3>
+                    <p class="text-gray-300">Progress Tracking</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Address Input Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8 card-hover">
-            <div class="flex items-center mb-6">
-                <div class="w-8 h-8 bg-hodl-blue rounded-lg flex items-center justify-center mr-3">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Add Bitcoin Addresses Section -->
+        <section class="mb-16 slide-in">
+            <div class="glass-card rounded-3xl p-8 border-2 border-gray-200 dark:border-gray-700">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-observer-blue to-observer-blue-dark rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold gradient-text">Add Bitcoin Addresses</h2>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Add Bitcoin Addresses</h2>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label for="addressInput" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                        Bitcoin Address
-                    </label>
-                    <div class="flex space-x-3">
-                        <input 
-                            type="text" 
-                            id="addressInput" 
-                            placeholder="Enter Bitcoin address (1..., 3..., or bc1...)"
-                            class="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hodl-blue focus:border-hodl-blue dark:bg-gray-700 dark:text-white transition-all duration-300"
-                        >
-                        <button 
-                            id="addAddressBtn" 
-                            class="px-6 py-3 bg-gradient-to-r from-hodl-blue to-hodl-blue-dark hover:from-hodl-blue-dark hover:to-hodl-blue text-white font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-hodl-blue focus:ring-offset-2 shadow-lg hover:shadow-xl transform hover:scale-105"
-                        >
+                
+                <div class="grid md:grid-cols-4 gap-4 items-end">
+                    <div class="md:col-span-3">
+                        <label for="addressInput" class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Bitcoin Address</label>
+                        <input type="text" id="addressInput" placeholder="Enter Bitcoin address (1..., 3..., or bc1...)" 
+                               class="w-full px-4 py-3 modern-input rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
+                    </div>
+                    <div>
+                        <button id="addAddressBtn" class="w-full modern-button text-white font-semibold py-3 px-6 rounded-xl relative overflow-hidden">
                             Add Address
                         </button>
                     </div>
-                    <div id="addressError" class="mt-3 text-sm text-red-600 dark:text-red-400 hidden"></div>
                 </div>
                 
-                <!-- Added Addresses List -->
-                <div id="addressesList" class="space-y-3 mt-6"></div>
+                <div id="errorMessage" class="mt-4 text-red-500 hidden"></div>
+                
+                <!-- Added Addresses Display -->
+                <div id="addressesList" class="mt-8 space-y-3"></div>
             </div>
-        </div>
+        </section>
 
         <!-- Savings Goal Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8 card-hover bitcoin-accent">
-            <div class="flex items-center mb-6">
-                <div class="w-8 h-8 bg-bitcoin rounded-lg flex items-center justify-center mr-3">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Savings Goal</h2>
-            </div>
-            <div class="space-y-6">
-                <div>
-                    <label for="savingsGoal" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                        Target Amount (BTC)
-                    </label>
-                    <input 
-                        type="number" 
-                        id="savingsGoal" 
-                        step="0.00000001" 
-                        placeholder="0.00000000"
-                        class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-bitcoin focus:border-bitcoin dark:bg-gray-700 dark:text-white transition-all duration-300"
-                    >
-                </div>
-                
-                <!-- Progress Display -->
-                <div id="progressSection" class="hidden">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Progress</span>
-                        <span id="progressPercentage" class="text-sm font-bold text-hodl-blue dark:text-bitcoin">0%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4 overflow-hidden">
-                        <div id="progressBar" class="progress-bar bg-gradient-to-r from-hodl-blue to-bitcoin h-4 rounded-full shadow-inner" style="width: 0%"></div>
-                    </div>
-                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                        <span id="currentAmount">0.00000000 BTC</span>
-                        <span id="targetAmount">0.00000000 BTC</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Balance Summary -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8 card-hover">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        <section class="mb-16 slide-in bitcoin-accent">
+            <div class="stats-card rounded-3xl p-8">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-bitcoin to-bitcoin-dark rounded-xl flex items-center justify-center mr-4 glow-effect">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                         </svg>
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Balance Summary</h2>
+                    <h2 class="text-3xl font-bold gradient-text">Savings Goal</h2>
                 </div>
-                <button 
-                    id="refreshBtn" 
-                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-all duration-300 flex items-center space-x-2"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                
+                <div class="grid md:grid-cols-2 gap-6 items-end mb-6">
+                    <div>
+                        <label for="savingsGoal" class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Target Amount (BTC)</label>
+                        <input type="number" id="savingsGoal" step="0.00000001" placeholder="0.00000000" 
+                               class="w-full px-4 py-3 modern-input rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
+                    </div>
+                </div>
+                
+                <div id="progressSection" class="hidden">
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm font-medium mb-2">
+                            <span class="text-gray-700 dark:text-gray-300">Progress</span>
+                            <span id="progressPercentage" class="text-bitcoin font-bold">0.0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                            <div id="progressBar" class="h-full bg-gradient-to-r from-bitcoin to-bitcoin-dark progress-bar rounded-full relative">
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm mt-2">
+                            <span id="currentAmount" class="text-gray-600 dark:text-gray-400">0.00000000 BTC</span>
+                            <span id="targetAmount" class="text-gray-600 dark:text-gray-400">0.00000000 BTC</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Balance Summary Section -->
+        <section class="mb-16 slide-in">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold gradient-text">Balance Summary</h2>
+                <button id="refreshBtn" class="modern-button text-white font-semibold py-2 px-6 rounded-xl flex items-center space-x-2 relative overflow-hidden">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
                     </svg>
                     <span>Refresh</span>
                 </button>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-gradient-to-br from-bitcoin to-orange-500 rounded-xl p-6 text-white">
-                    <div class="text-3xl font-bold" id="totalBalance">0.00000000</div>
-                    <div class="text-orange-100 font-medium">Total Balance (BTC)</div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="gradient-card bg-card-gradient rounded-2xl p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Total Balance (BTC)</h3>
+                        <svg class="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <p id="totalBalance" class="text-3xl font-bold">0.00000000</p>
                 </div>
-                <div class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl p-6 text-white">
-                    <div class="text-3xl font-bold" id="totalUtxos">0</div>
-                    <div class="text-green-100 font-medium">Total UTXOs</div>
+                
+                <div class="gradient-card bg-card-gradient-green rounded-2xl p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Total UTXOs</h3>
+                        <svg class="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                        </svg>
+                    </div>
+                    <p id="totalUtxos" class="text-3xl font-bold">0</p>
                 </div>
-                <div class="bg-gradient-to-br from-hodl-blue to-blue-600 rounded-xl p-6 text-white">
-                    <div class="text-3xl font-bold" id="totalAddresses">0</div>
-                    <div class="text-blue-100 font-medium">Addresses</div>
+                
+                <div class="gradient-card bg-card-gradient-blue rounded-2xl p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Addresses</h3>
+                        <svg class="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" clip-rule="evenodd"></path>
+                            <path d="M6 8a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zM6 11a1 1 0 011-1h3a1 1 0 110 2H7a1 1 0 01-1-1z"></path>
+                        </svg>
+                    </div>
+                    <p id="totalAddresses" class="text-3xl font-bold">0</p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- UTXOs Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 card-hover">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2a2 2 0 002 2m0 0h14m-14 0a2 2 0 002 2v2a2 2 0 01-2 2"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Unspent Transaction Outputs (UTXOs)</h2>
-                </div>
-                <button 
-                    id="refreshUtxosBtn" 
-                    class="px-4 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 rounded-lg transition-all duration-300 flex items-center space-x-2"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        <section class="slide-in">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold gradient-text">Unspent Transaction Outputs (UTXOs)</h2>
+                <button id="refreshUtxosBtn" class="modern-button text-white font-semibold py-2 px-6 rounded-xl flex items-center space-x-2 relative overflow-hidden">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
                     </svg>
                     <span>Refresh</span>
                 </button>
             </div>
             
-            <div id="utxosContainer">
-                <div id="noUtxosMessage" class="text-center py-12">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No UTXOs found</h3>
-                    <p class="text-gray-600 dark:text-gray-400">Add Bitcoin addresses to view their unspent outputs.</p>
-                </div>
-                
-                <div id="utxosTable" class="hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-900">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Address</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Transaction ID</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount (BTC)</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Confirmations</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="utxosTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                <!-- UTXOs will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
+            <div class="stats-card rounded-3xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-observer-blue to-observer-blue-dark text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Address</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Amount (BTC)</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Confirmations</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Transaction ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="utxosTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <div class="flex flex-col items-center">
+                                        <svg class="w-16 h-16 mb-4 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <p class="text-lg font-medium">No UTXOs found</p>
+                                        <p class="text-sm">Add Bitcoin addresses to start tracking your portfolio</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center space-x-4 mb-4 md:mb-0">
-                    <img src="assets/logos/hodlscope-icon.png" alt="Hodlscope" class="w-8 h-8">
-                    <div>
-                        <div class="text-sm font-semibold text-gray-900 dark:text-white">Hodlscope</div>
-                        <div class="text-xs text-gray-600 dark:text-gray-400">Your Bitcoin Portfolio in Focus</div>
-                    </div>
-                </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400 text-center md:text-right">
-                    <p>Watch-only Bitcoin portfolio tracker</p>
-                    <p class="mt-1">Built for serious HODLers</p>
-                </div>
+    <footer class="bg-gradient-to-r from-observer-navy to-observer-blue text-white py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex justify-center items-center mb-6">
+                <img src="assets/logos/bitobserver-logo-dark.png" alt="BitObserver" class="h-8 w-auto">
             </div>
+            <p class="text-lg mb-4">Your Bitcoin Portfolio Observer</p>
+            <p class="text-gray-300 max-w-2xl mx-auto">
+                BitObserver provides professional Bitcoin portfolio tracking with watch-only functionality. 
+                Monitor your addresses, track UTXOs, and achieve your savings goals with confidence.
+            </p>
+            <div class="section-divider"></div>
+            <p class="text-sm text-gray-400">
+                © 2025 BitObserver. Built for the Bitcoin community.
+            </p>
         </div>
     </footer>
 
     <script>
-        // Bitcoin Address Validation
+        // Bitcoin address validation
         function isValidBitcoinAddress(address) {
-            // Legacy P2PKH (starts with 1)
-            const p2pkhRegex = /^[1][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
-            // Script Hash P2SH (starts with 3)
-            const p2shRegex = /^[3][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
-            // Bech32 (starts with bc1)
-            const bech32Regex = /^bc1[a-z0-9]{39,59}$/;
+            // Legacy address (P2PKH)
+            const legacyRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+            // P2SH address
+            const p2shRegex = /^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+            // Bech32 address (P2WPKH and P2WSH)
+            const bech32Regex = /^(bc1|tb1)[a-zA-HJ-NP-Z0-9]{25,87}$/;
             
-            return p2pkhRegex.test(address) || p2shRegex.test(address) || bech32Regex.test(address);
+            return legacyRegex.test(address) || p2shRegex.test(address) || bech32Regex.test(address);
         }
 
-        // Bitcoin API Client
-        class BitcoinAPIClient {
-            constructor() {
-                this.primaryAPI = 'https://mempool.space/api';
-                this.fallbackAPI = 'https://blockstream.info/api';
-            }
+        // Storage management
+        function saveAddresses(addresses) {
+            localStorage.setItem('bitobserver_addresses', JSON.stringify(addresses));
+        }
 
-            async fetchWithFallback(endpoint) {
+        function loadAddresses() {
+            const stored = localStorage.getItem('bitobserver_addresses');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveSavingsGoal(goal) {
+            localStorage.setItem('bitobserver_savings_goal', goal.toString());
+        }
+
+        function loadSavingsGoal() {
+            const stored = localStorage.getItem('bitobserver_savings_goal');
+            return stored ? parseFloat(stored) : 0;
+        }
+
+        // Global variables
+        let addresses = loadAddresses();
+        let utxosData = [];
+        let totalBalance = 0;
+
+        // API functions
+        async function fetchAddressData(address) {
+            const apis = [
+                `https://mempool.space/api/address/${address}`,
+                `https://blockstream.info/api/address/${address}`
+            ];
+
+            for (const api of apis) {
                 try {
-                    const response = await fetch(`${this.primaryAPI}${endpoint}`);
-                    if (!response.ok) throw new Error('Primary API failed');
-                    return await response.json();
-                } catch (error) {
-                    console.warn('Primary API failed, trying fallback:', error);
-                    try {
-                        const response = await fetch(`${this.fallbackAPI}${endpoint}`);
-                        if (!response.ok) throw new Error('Fallback API failed');
+                    const response = await fetch(api);
+                    if (response.ok) {
                         return await response.json();
-                    } catch (fallbackError) {
-                        console.error('Both APIs failed:', fallbackError);
-                        throw new Error('Unable to fetch data from Bitcoin APIs');
                     }
-                }
-            }
-
-            async getAddressInfo(address) {
-                return await this.fetchWithFallback(`/address/${address}`);
-            }
-
-            async getAddressUtxos(address) {
-                return await this.fetchWithFallback(`/address/${address}/utxo`);
-            }
-        }
-
-        // Main Application Class
-        class BitcoinCheckbook {
-            constructor() {
-                this.apiClient = new BitcoinAPIClient();
-                this.addresses = JSON.parse(localStorage.getItem('bitcoin-addresses') || '[]');
-                this.savingsGoal = parseFloat(localStorage.getItem('savings-goal') || '0');
-                this.utxos = [];
-                this.totalBalance = 0;
-                
-                this.initializeEventListeners();
-                this.loadSavedData();
-                this.initializeDarkMode();
-            }
-
-            initializeEventListeners() {
-                // Address input
-                document.getElementById('addAddressBtn').addEventListener('click', () => this.addAddress());
-                document.getElementById('addressInput').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.addAddress();
-                });
-
-                // Savings goal
-                document.getElementById('savingsGoal').addEventListener('input', (e) => {
-                    this.savingsGoal = parseFloat(e.target.value) || 0;
-                    localStorage.setItem('savings-goal', this.savingsGoal.toString());
-                    this.updateProgressDisplay();
-                });
-
-                // Refresh buttons
-                document.getElementById('refreshBtn').addEventListener('click', () => this.refreshAllData());
-                document.getElementById('refreshUtxosBtn').addEventListener('click', () => this.refreshAllData());
-
-                // Dark mode toggle
-                document.getElementById('darkModeToggle').addEventListener('click', () => this.toggleDarkMode());
-            }
-
-            initializeDarkMode() {
-                const isDark = localStorage.getItem('dark-mode') === 'true' || 
-                              (!localStorage.getItem('dark-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                }
-            }
-
-            toggleDarkMode() {
-                const isDark = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('dark-mode', isDark.toString());
-            }
-
-            loadSavedData() {
-                // Load savings goal
-                if (this.savingsGoal > 0) {
-                    document.getElementById('savingsGoal').value = this.savingsGoal.toFixed(8);
-                }
-
-                // Load addresses
-                this.renderAddressesList();
-                
-                // Refresh data if addresses exist
-                if (this.addresses.length > 0) {
-                    this.refreshAllData();
-                }
-            }
-
-            async addAddress() {
-                const input = document.getElementById('addressInput');
-                const address = input.value.trim();
-                const errorDiv = document.getElementById('addressError');
-
-                // Clear previous errors
-                errorDiv.classList.add('hidden');
-
-                if (!address) {
-                    this.showError('Please enter a Bitcoin address');
-                    return;
-                }
-
-                if (!isValidBitcoinAddress(address)) {
-                    this.showError('Invalid Bitcoin address format');
-                    return;
-                }
-
-                if (this.addresses.includes(address)) {
-                    this.showError('Address already added');
-                    return;
-                }
-
-                // Add address
-                this.addresses.push(address);
-                localStorage.setItem('bitcoin-addresses', JSON.stringify(this.addresses));
-                
-                // Clear input
-                input.value = '';
-                
-                // Update UI
-                this.renderAddressesList();
-                this.refreshAllData();
-            }
-
-            showError(message) {
-                const errorDiv = document.getElementById('addressError');
-                errorDiv.textContent = message;
-                errorDiv.classList.remove('hidden');
-            }
-
-            removeAddress(address) {
-                this.addresses = this.addresses.filter(addr => addr !== address);
-                localStorage.setItem('bitcoin-addresses', JSON.stringify(this.addresses));
-                this.renderAddressesList();
-                this.refreshAllData();
-            }
-
-            renderAddressesList() {
-                const container = document.getElementById('addressesList');
-                container.innerHTML = '';
-
-                this.addresses.forEach(address => {
-                    const addressDiv = document.createElement('div');
-                    addressDiv.className = 'flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600';
-                    addressDiv.innerHTML = `
-                        <span class="font-mono text-sm text-gray-700 dark:text-gray-300 break-all">${address}</span>
-                        <button onclick="app.removeAddress('${address}')" class="ml-4 p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    `;
-                    container.appendChild(addressDiv);
-                });
-            }
-
-            async refreshAllData() {
-                if (this.addresses.length === 0) {
-                    this.updateBalanceDisplay();
-                    this.updateUtxosDisplay();
-                    return;
-                }
-
-                // Show loading state
-                this.setLoadingState(true);
-
-                try {
-                    // Fetch data for all addresses
-                    const addressPromises = this.addresses.map(address => 
-                        this.apiClient.getAddressInfo(address)
-                    );
-                    const utxoPromises = this.addresses.map(address => 
-                        this.apiClient.getAddressUtxos(address)
-                    );
-
-                    const [addressInfos, utxoArrays] = await Promise.all([
-                        Promise.all(addressPromises),
-                        Promise.all(utxoPromises)
-                    ]);
-
-                    // Calculate total balance
-                    this.totalBalance = addressInfos.reduce((total, info) => {
-                        const balance = info.chain_stats ? info.chain_stats.funded_txo_sum - info.chain_stats.spent_txo_sum : 0;
-                        return total + balance;
-                    }, 0) / 100000000; // Convert satoshis to BTC
-
-                    // Combine all UTXOs
-                    this.utxos = [];
-                    utxoArrays.forEach((utxos, index) => {
-                        const address = this.addresses[index];
-                        utxos.forEach(utxo => {
-                            this.utxos.push({
-                                ...utxo,
-                                address: address
-                            });
-                        });
-                    });
-
-                    // Update displays
-                    this.updateBalanceDisplay();
-                    this.updateUtxosDisplay();
-                    this.updateProgressDisplay();
-
                 } catch (error) {
-                    console.error('Error fetching data:', error);
-                    this.showError('Failed to fetch data from Bitcoin APIs');
-                } finally {
-                    this.setLoadingState(false);
+                    console.error(`Error fetching from ${api}:`, error);
                 }
             }
+            throw new Error('All APIs failed');
+        }
 
-            setLoadingState(loading) {
-                const refreshBtns = document.querySelectorAll('#refreshBtn, #refreshUtxosBtn');
-                refreshBtns.forEach(btn => {
-                    if (loading) {
-                        btn.disabled = true;
-                        btn.innerHTML = '<div class="loading-spinner"></div>';
-                    } else {
-                        btn.disabled = false;
-                        btn.innerHTML = `
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            <span>Refresh</span>
-                        `;
+        async function fetchAddressUtxos(address) {
+            const apis = [
+                `https://mempool.space/api/address/${address}/utxo`,
+                `https://blockstream.info/api/address/${address}/utxo`
+            ];
+
+            for (const api of apis) {
+                try {
+                    const response = await fetch(api);
+                    if (response.ok) {
+                        return await response.json();
                     }
-                });
+                } catch (error) {
+                    console.error(`Error fetching UTXOs from ${api}:`, error);
+                }
+            }
+            throw new Error('All UTXO APIs failed');
+        }
+
+        // UI functions
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        function addAddressToList(address) {
+            const addressesList = document.getElementById('addressesList');
+            const addressDiv = document.createElement('div');
+            addressDiv.className = 'flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 rounded-xl slide-in';
+            addressDiv.innerHTML = `
+                <span class="font-mono text-sm break-all">${address}</span>
+                <button onclick="removeAddress('${address}')" class="ml-4 text-red-500 hover:text-red-700 transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            `;
+            addressesList.appendChild(addressDiv);
+        }
+
+        function removeAddress(address) {
+            addresses = addresses.filter(addr => addr !== address);
+            saveAddresses(addresses);
+            updateAddressesList();
+            updateBalanceDisplay();
+            updateUtxosDisplay();
+        }
+
+        function updateAddressesList() {
+            const addressesList = document.getElementById('addressesList');
+            addressesList.innerHTML = '';
+            addresses.forEach(address => addAddressToList(address));
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('totalBalance').textContent = totalBalance.toFixed(8);
+            document.getElementById('totalUtxos').textContent = utxosData.length;
+            document.getElementById('totalAddresses').textContent = addresses.length;
+        }
+
+        function updateUtxosDisplay() {
+            const tbody = document.getElementById('utxosTableBody');
+            
+            if (utxosData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-16 h-16 mb-4 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-lg font-medium">No UTXOs found</p>
+                                <p class="text-sm">Add Bitcoin addresses to start tracking your portfolio</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
             }
 
-            updateBalanceDisplay() {
-                document.getElementById('totalBalance').textContent = this.totalBalance.toFixed(8);
-                document.getElementById('totalUtxos').textContent = this.utxos.length.toString();
-                document.getElementById('totalAddresses').textContent = this.addresses.length.toString();
-            }
+            tbody.innerHTML = utxosData.map(utxo => `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <td class="px-6 py-4 font-mono text-sm break-all">${utxo.address}</td>
+                    <td class="px-6 py-4 font-bold text-bitcoin">${(utxo.value / 100000000).toFixed(8)}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${utxo.status.confirmed ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}">
+                            ${utxo.status.confirmed ? utxo.status.block_height ? 'Confirmed' : 'Unconfirmed' : 'Pending'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 font-mono text-sm break-all">${utxo.txid}</td>
+                </tr>
+            `).join('');
+        }
 
-            updateProgressDisplay() {
+        function updateSavingsProgress() {
+            const goal = parseFloat(document.getElementById('savingsGoal').value) || 0;
+            if (goal > 0) {
                 const progressSection = document.getElementById('progressSection');
+                const progressBar = document.getElementById('progressBar');
+                const progressPercentage = document.getElementById('progressPercentage');
+                const currentAmount = document.getElementById('currentAmount');
+                const targetAmount = document.getElementById('targetAmount');
+
+                const percentage = Math.min((totalBalance / goal) * 100, 100);
                 
-                if (this.savingsGoal > 0) {
-                    progressSection.classList.remove('hidden');
-                    
-                    const progress = Math.min((this.totalBalance / this.savingsGoal) * 100, 100);
-                    
-                    document.getElementById('progressPercentage').textContent = `${progress.toFixed(1)}%`;
-                    document.getElementById('progressBar').style.width = `${progress}%`;
-                    document.getElementById('currentAmount').textContent = `${this.totalBalance.toFixed(8)} BTC`;
-                    document.getElementById('targetAmount').textContent = `${this.savingsGoal.toFixed(8)} BTC`;
-                } else {
-                    progressSection.classList.add('hidden');
-                }
-            }
-
-            updateUtxosDisplay() {
-                const noUtxosMessage = document.getElementById('noUtxosMessage');
-                const utxosTable = document.getElementById('utxosTable');
-                const tableBody = document.getElementById('utxosTableBody');
-
-                if (this.utxos.length === 0) {
-                    noUtxosMessage.classList.remove('hidden');
-                    utxosTable.classList.add('hidden');
-                    return;
-                }
-
-                noUtxosMessage.classList.add('hidden');
-                utxosTable.classList.remove('hidden');
-
-                // Clear existing rows
-                tableBody.innerHTML = '';
-
-                // Add UTXO rows
-                this.utxos.forEach(utxo => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
-                    
-                    const confirmations = utxo.status && utxo.status.confirmed ? 
-                        (utxo.status.block_height ? `${Date.now() - utxo.status.block_time * 1000 > 0 ? Math.floor((Date.now() - utxo.status.block_time * 1000) / 600000) : 0}` : 'Unconfirmed') : 
-                        'Unconfirmed';
-                    
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-gray-100">
-                            ${utxo.address.substring(0, 20)}...
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">
-                            <a href="https://mempool.space/tx/${utxo.txid}" target="_blank" class="text-hodl-blue dark:text-bitcoin hover:underline">
-                                ${utxo.txid.substring(0, 20)}...
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-gray-100">
-                            ${(utxo.value / 100000000).toFixed(8)}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                            ${utxo.status && utxo.status.block_height ? utxo.status.block_height : 'Pending'}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${utxo.status && utxo.status.confirmed ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}">
-                                ${utxo.status && utxo.status.confirmed ? 'Confirmed' : 'Pending'}
-                            </span>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+                progressSection.classList.remove('hidden');
+                progressBar.style.width = `${percentage}%`;
+                progressPercentage.textContent = `${percentage.toFixed(1)}%`;
+                currentAmount.textContent = `${totalBalance.toFixed(8)} BTC`;
+                targetAmount.textContent = `${goal.toFixed(8)} BTC`;
+            } else {
+                document.getElementById('progressSection').classList.add('hidden');
             }
         }
 
-        // Initialize the application
-        const app = new BitcoinCheckbook();
+        async function refreshData() {
+            if (addresses.length === 0) {
+                showError('Please add at least one Bitcoin address');
+                return;
+            }
+
+            const refreshBtn = document.getElementById('refreshBtn');
+            const refreshUtxosBtn = document.getElementById('refreshUtxosBtn');
+            
+            // Show loading state
+            refreshBtn.innerHTML = '<div class="loading-spinner"></div>';
+            refreshUtxosBtn.innerHTML = '<div class="loading-spinner"></div>';
+
+            try {
+                utxosData = [];
+                totalBalance = 0;
+
+                for (const address of addresses) {
+                    try {
+                        const utxos = await fetchAddressUtxos(address);
+                        for (const utxo of utxos) {
+                            utxo.address = address;
+                            utxosData.push(utxo);
+                            totalBalance += utxo.value / 100000000;
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching data for ${address}:`, error);
+                    }
+                }
+
+                updateBalanceDisplay();
+                updateUtxosDisplay();
+                updateSavingsProgress();
+
+            } catch (error) {
+                showError('Failed to fetch data from Bitcoin APIs');
+                console.error('Error refreshing data:', error);
+            } finally {
+                // Restore button text
+                refreshBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Refresh</span>
+                `;
+                refreshUtxosBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Refresh</span>
+                `;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('addAddressBtn').addEventListener('click', function() {
+            const addressInput = document.getElementById('addressInput');
+            const address = addressInput.value.trim();
+
+            if (!address) {
+                showError('Please enter a Bitcoin address');
+                return;
+            }
+
+            if (!isValidBitcoinAddress(address)) {
+                showError('Invalid Bitcoin address format');
+                return;
+            }
+
+            if (addresses.includes(address)) {
+                showError('Address already added');
+                return;
+            }
+
+            addresses.push(address);
+            saveAddresses(addresses);
+            addAddressToList(address);
+            addressInput.value = '';
+            updateBalanceDisplay();
+            
+            // Auto-refresh data when new address is added
+            refreshData();
+        });
+
+        document.getElementById('addressInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('addAddressBtn').click();
+            }
+        });
+
+        document.getElementById('savingsGoal').addEventListener('input', function() {
+            const goal = parseFloat(this.value) || 0;
+            saveSavingsGoal(goal);
+            updateSavingsProgress();
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', refreshData);
+        document.getElementById('refreshUtxosBtn').addEventListener('click', refreshData);
+
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('bitobserver_dark_mode', document.documentElement.classList.contains('dark'));
+        });
+
+        // Initialize
+        function init() {
+            // Load dark mode preference
+            const darkMode = localStorage.getItem('bitobserver_dark_mode');
+            if (darkMode === 'true' || (darkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+
+            // Load saved data
+            updateAddressesList();
+            const savedGoal = loadSavingsGoal();
+            if (savedGoal > 0) {
+                document.getElementById('savingsGoal').value = savedGoal;
+            }
+            
+            updateBalanceDisplay();
+            updateSavingsProgress();
+
+            // Auto-refresh if addresses exist
+            if (addresses.length > 0) {
+                refreshData();
+            }
+        }
+
+        // Start the application
+        init();
     </script>
 </body>
 </html>
