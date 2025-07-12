@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Checkbook & Savings Tracker</title>
+    <title>Hodlscope - Your Bitcoin Portfolio in Focus</title>
+    <link rel="icon" type="image/png" href="assets/logos/hodlscope-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -12,7 +13,14 @@
                 extend: {
                     colors: {
                         bitcoin: '#f7931a',
-                        'bitcoin-dark': '#e8851a'
+                        'bitcoin-dark': '#e8851a',
+                        'hodl-blue': '#1E3A8A',
+                        'hodl-blue-dark': '#1E40AF',
+                        'hodl-gray': '#374151'
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "url('assets/backgrounds/hero-background.png')",
+                        'hero-pattern-dark': "url('assets/backgrounds/hero-background-dark.png')"
                     }
                 }
             }
@@ -36,20 +44,80 @@
         .progress-bar {
             transition: width 0.5s ease-in-out;
         }
+
+        .hero-section {
+            background-image: url('assets/backgrounds/hero-background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .dark .hero-section {
+            background-image: url('assets/backgrounds/hero-background-dark.png');
+        }
+
+        .logo-hover {
+            transition: transform 0.3s ease;
+        }
+
+        .logo-hover:hover {
+            transform: scale(1.05);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .card-hover:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1E3A8A, #f7931a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .bitcoin-accent {
+            position: relative;
+        }
+
+        .bitcoin-accent::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background-image: url('assets/icons/bitcoin-accent.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <header class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-                        ₿ Bitcoin Checkbook
-                    </h1>
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-4">
+                    <img src="assets/logos/hodlscope-icon.png" alt="Hodlscope" class="w-12 h-12 logo-hover">
+                    <div>
+                        <h1 class="text-2xl font-bold text-hodl-blue dark:text-white">
+                            Hodlscope
+                        </h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Your Bitcoin Portfolio in Focus</p>
+                    </div>
                 </div>
-                <button id="darkModeToggle" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="darkModeToggle" class="p-3 rounded-lg text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                     </svg>
                 </button>
@@ -57,193 +125,234 @@
         </div>
     </header>
 
+    <!-- Hero Section -->
+    <section class="hero-section bg-gradient-to-r from-hodl-blue to-blue-600 dark:from-gray-800 dark:to-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                Bitcoin <span class="text-bitcoin">Portfolio Tracking</span>
+            </h2>
+            <p class="text-xl text-blue-100 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+                Monitor your Bitcoin addresses, track UTXOs, and achieve your savings goal.
+            </p>
+            <div class="flex justify-center space-x-8 text-center">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-2xl font-bold text-bitcoin">Watch-Only</div>
+                    <div class="text-sm text-blue-100">Secure Monitoring</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-2xl font-bold text-bitcoin">Multi-Address</div>
+                    <div class="text-sm text-blue-100">Portfolio Tracking</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-2xl font-bold text-bitcoin">Savings Goals</div>
+                    <div class="text-sm text-blue-100">Progress Tracking</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Address Input Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Add Bitcoin Addresses</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8 card-hover">
+            <div class="flex items-center mb-6">
+                <div class="w-8 h-8 bg-hodl-blue rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Add Bitcoin Addresses</h2>
+            </div>
             <div class="space-y-4">
                 <div>
-                    <label for="addressInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="addressInput" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                         Bitcoin Address
                     </label>
-                    <div class="flex space-x-2">
+                    <div class="flex space-x-3">
                         <input 
                             type="text" 
                             id="addressInput" 
                             placeholder="Enter Bitcoin address (1..., 3..., or bc1...)"
-                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bitcoin focus:border-bitcoin dark:bg-gray-700 dark:text-white"
+                            class="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hodl-blue focus:border-hodl-blue dark:bg-gray-700 dark:text-white transition-all duration-300"
                         >
                         <button 
                             id="addAddressBtn" 
-                            class="px-4 py-2 bg-bitcoin hover:bg-bitcoin-dark text-white font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-bitcoin focus:ring-offset-2"
+                            class="px-6 py-3 bg-gradient-to-r from-hodl-blue to-hodl-blue-dark hover:from-hodl-blue-dark hover:to-hodl-blue text-white font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-hodl-blue focus:ring-offset-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                             Add Address
                         </button>
                     </div>
-                    <div id="addressError" class="mt-2 text-sm text-red-600 dark:text-red-400 hidden"></div>
+                    <div id="addressError" class="mt-3 text-sm text-red-600 dark:text-red-400 hidden"></div>
                 </div>
                 
                 <!-- Added Addresses List -->
-                <div id="addressesList" class="space-y-2"></div>
+                <div id="addressesList" class="space-y-3 mt-6"></div>
             </div>
         </div>
 
         <!-- Savings Goal Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Savings Goal</h2>
-            <div class="space-y-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8 card-hover bitcoin-accent">
+            <div class="flex items-center mb-6">
+                <div class="w-8 h-8 bg-bitcoin rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Savings Goal</h2>
+            </div>
+            <div class="space-y-6">
                 <div>
-                    <label for="savingsGoal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="savingsGoal" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                         Target Amount (BTC)
                     </label>
                     <input 
                         type="number" 
                         id="savingsGoal" 
-                        step="0.00000001"
+                        step="0.00000001" 
                         placeholder="0.00000000"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bitcoin focus:border-bitcoin dark:bg-gray-700 dark:text-white"
+                        class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-bitcoin focus:border-bitcoin dark:bg-gray-700 dark:text-white transition-all duration-300"
                     >
                 </div>
                 
-                <!-- Progress Bar -->
+                <!-- Progress Display -->
                 <div id="progressSection" class="hidden">
-                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        <span>Progress</span>
-                        <span id="progressPercentage">0%</span>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Progress</span>
+                        <span id="progressPercentage" class="text-sm font-bold text-hodl-blue dark:text-bitcoin">0%</span>
                     </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                        <div id="progressBar" class="progress-bar bg-bitcoin h-3 rounded-full" style="width: 0%"></div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4 overflow-hidden">
+                        <div id="progressBar" class="progress-bar bg-gradient-to-r from-hodl-blue to-bitcoin h-4 rounded-full shadow-inner" style="width: 0%"></div>
                     </div>
-                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-2">
-                        <span id="currentBalance">0.00000000 BTC</span>
-                        <span id="goalAmount">0.00000000 BTC</span>
+                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                        <span id="currentAmount">0.00000000 BTC</span>
+                        <span id="targetAmount">0.00000000 BTC</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Balance Summary -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Balance Summary</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div class="text-2xl font-bold text-bitcoin" id="totalBalance">0.00000000</div>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Total Balance (BTC)</div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8 card-hover">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Balance Summary</h2>
                 </div>
-                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div class="text-2xl font-bold text-green-600" id="totalUTXOs">0</div>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Total UTXOs</div>
+                <button 
+                    id="refreshBtn" 
+                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-all duration-300 flex items-center space-x-2"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span>Refresh</span>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-bitcoin to-orange-500 rounded-xl p-6 text-white">
+                    <div class="text-3xl font-bold" id="totalBalance">0.00000000</div>
+                    <div class="text-orange-100 font-medium">Total Balance (BTC)</div>
                 </div>
-                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600" id="totalAddresses">0</div>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Addresses</div>
+                <div class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl p-6 text-white">
+                    <div class="text-3xl font-bold" id="totalUtxos">0</div>
+                    <div class="text-green-100 font-medium">Total UTXOs</div>
+                </div>
+                <div class="bg-gradient-to-br from-hodl-blue to-blue-600 rounded-xl p-6 text-white">
+                    <div class="text-3xl font-bold" id="totalAddresses">0</div>
+                    <div class="text-blue-100 font-medium">Addresses</div>
                 </div>
             </div>
         </div>
 
-        <!-- UTXOs Table -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Unspent Transaction Outputs (UTXOs)</h2>
+        <!-- UTXOs Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 card-hover">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2a2 2 0 002 2m0 0h14m-14 0a2 2 0 002 2v2a2 2 0 01-2 2"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Unspent Transaction Outputs (UTXOs)</h2>
+                </div>
                 <button 
-                    id="refreshBtn" 
-                    class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    id="refreshUtxosBtn" 
+                    class="px-4 py-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 rounded-lg transition-all duration-300 flex items-center space-x-2"
                 >
-                    <span id="refreshText">Refresh</span>
-                    <div id="refreshSpinner" class="loading-spinner hidden inline-block ml-2"></div>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span>Refresh</span>
                 </button>
             </div>
             
             <div id="utxosContainer">
-                <div id="emptyState" class="text-center py-12 text-gray-500 dark:text-gray-400">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No UTXOs found</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add Bitcoin addresses to view their unspent outputs.</p>
+                <div id="noUtxosMessage" class="text-center py-12">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No UTXOs found</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Add Bitcoin addresses to view their unspent outputs.</p>
                 </div>
                 
-                <div id="utxosTable" class="hidden overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Address</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Transaction ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount (BTC)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Confirmations</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="utxosTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        </tbody>
-                    </table>
+                <div id="utxosTable" class="hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-900">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Address</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Transaction ID</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount (BTC)</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Confirmations</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="utxosTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- UTXOs will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                    <img src="assets/logos/hodlscope-icon.png" alt="Hodlscope" class="w-8 h-8">
+                    <div>
+                        <div class="text-sm font-semibold text-gray-900 dark:text-white">Hodlscope</div>
+                        <div class="text-xs text-gray-600 dark:text-gray-400">Your Bitcoin Portfolio in Focus</div>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400 text-center md:text-right">
+                    <p>Watch-only Bitcoin portfolio tracker</p>
+                    <p class="mt-1">Built for serious HODLers</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script>
         // Bitcoin Address Validation
-        class BitcoinAddressValidator {
-            static validateAddress(address) {
-                if (!address || typeof address !== 'string') {
-                    return { valid: false, error: 'Address is required' };
-                }
-
-                // Remove whitespace
-                address = address.trim();
-
-                // Check for empty address
-                if (address.length === 0) {
-                    return { valid: false, error: 'Address cannot be empty' };
-                }
-
-                // Legacy address (P2PKH) - starts with '1'
-                if (address.startsWith('1')) {
-                    if (address.length >= 26 && address.length <= 35) {
-                        if (this.isValidBase58(address)) {
-                            return { valid: true, type: 'P2PKH' };
-                        }
-                    }
-                    return { valid: false, error: 'Invalid legacy address format' };
-                }
-
-                // Script Hash address (P2SH) - starts with '3'
-                if (address.startsWith('3')) {
-                    if (address.length >= 26 && address.length <= 35) {
-                        if (this.isValidBase58(address)) {
-                            return { valid: true, type: 'P2SH' };
-                        }
-                    }
-                    return { valid: false, error: 'Invalid script hash address format' };
-                }
-
-                // Bech32 address (P2WPKH/P2WSH) - starts with 'bc1'
-                if (address.startsWith('bc1')) {
-                    if (address.length >= 42 && address.length <= 62) {
-                        if (this.isValidBech32(address)) {
-                            return { valid: true, type: 'Bech32' };
-                        }
-                    }
-                    return { valid: false, error: 'Invalid bech32 address format' };
-                }
-
-                return { valid: false, error: 'Unsupported address format' };
-            }
-
-            static isValidBase58(address) {
-                const base58Chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-                return address.split('').every(char => base58Chars.includes(char));
-            }
-
-            static isValidBech32(address) {
-                const bech32Chars = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
-                const parts = address.split('1');
-                if (parts.length !== 2) return false;
-                const [hrp, data] = parts;
-                if (hrp !== 'bc') return false;
-                return data.split('').every(char => bech32Chars.includes(char));
-            }
+        function isValidBitcoinAddress(address) {
+            // Legacy P2PKH (starts with 1)
+            const p2pkhRegex = /^[1][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+            // Script Hash P2SH (starts with 3)
+            const p2shRegex = /^[3][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+            // Bech32 (starts with bc1)
+            const bech32Regex = /^bc1[a-z0-9]{39,59}$/;
+            
+            return p2pkhRegex.test(address) || p2shRegex.test(address) || bech32Regex.test(address);
         }
 
         // Bitcoin API Client
@@ -251,32 +360,23 @@
             constructor() {
                 this.primaryAPI = 'https://mempool.space/api';
                 this.fallbackAPI = 'https://blockstream.info/api';
-                this.currentAPI = this.primaryAPI;
             }
 
             async fetchWithFallback(endpoint) {
                 try {
-                    const response = await fetch(`${this.currentAPI}${endpoint}`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+                    const response = await fetch(`${this.primaryAPI}${endpoint}`);
+                    if (!response.ok) throw new Error('Primary API failed');
                     return await response.json();
                 } catch (error) {
-                    console.warn(`Primary API failed: ${error.message}, trying fallback...`);
-                    if (this.currentAPI === this.primaryAPI) {
-                        this.currentAPI = this.fallbackAPI;
-                        try {
-                            const response = await fetch(`${this.currentAPI}${endpoint}`);
-                            if (!response.ok) {
-                                throw new Error(`HTTP ${response.status}`);
-                            }
-                            return await response.json();
-                        } catch (fallbackError) {
-                            this.currentAPI = this.primaryAPI; // Reset for next time
-                            throw new Error(`Both APIs failed: ${error.message}, ${fallbackError.message}`);
-                        }
+                    console.warn('Primary API failed, trying fallback:', error);
+                    try {
+                        const response = await fetch(`${this.fallbackAPI}${endpoint}`);
+                        if (!response.ok) throw new Error('Fallback API failed');
+                        return await response.json();
+                    } catch (fallbackError) {
+                        console.error('Both APIs failed:', fallbackError);
+                        throw new Error('Unable to fetch data from Bitcoin APIs');
                     }
-                    throw error;
                 }
             }
 
@@ -284,56 +384,51 @@
                 return await this.fetchWithFallback(`/address/${address}`);
             }
 
-            async getAddressUTXOs(address) {
+            async getAddressUtxos(address) {
                 return await this.fetchWithFallback(`/address/${address}/utxo`);
             }
         }
 
-        // Application State
+        // Main Application Class
         class BitcoinCheckbook {
             constructor() {
-                this.addresses = new Set();
-                this.utxos = [];
                 this.apiClient = new BitcoinAPIClient();
-                this.savingsGoal = 0;
-                this.loadFromStorage();
+                this.addresses = JSON.parse(localStorage.getItem('bitcoin-addresses') || '[]');
+                this.savingsGoal = parseFloat(localStorage.getItem('savings-goal') || '0');
+                this.utxos = [];
+                this.totalBalance = 0;
+                
                 this.initializeEventListeners();
+                this.loadSavedData();
                 this.initializeDarkMode();
             }
 
             initializeEventListeners() {
-                // Add address button
-                document.getElementById('addAddressBtn').addEventListener('click', () => {
-                    this.addAddress();
-                });
-
-                // Enter key in address input
+                // Address input
+                document.getElementById('addAddressBtn').addEventListener('click', () => this.addAddress());
                 document.getElementById('addressInput').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.addAddress();
-                    }
+                    if (e.key === 'Enter') this.addAddress();
                 });
 
-                // Savings goal input
+                // Savings goal
                 document.getElementById('savingsGoal').addEventListener('input', (e) => {
                     this.savingsGoal = parseFloat(e.target.value) || 0;
-                    this.saveToStorage();
-                    this.updateProgressBar();
+                    localStorage.setItem('savings-goal', this.savingsGoal.toString());
+                    this.updateProgressDisplay();
                 });
 
-                // Refresh button
-                document.getElementById('refreshBtn').addEventListener('click', () => {
-                    this.refreshData();
-                });
+                // Refresh buttons
+                document.getElementById('refreshBtn').addEventListener('click', () => this.refreshAllData());
+                document.getElementById('refreshUtxosBtn').addEventListener('click', () => this.refreshAllData());
 
                 // Dark mode toggle
-                document.getElementById('darkModeToggle').addEventListener('click', () => {
-                    this.toggleDarkMode();
-                });
+                document.getElementById('darkModeToggle').addEventListener('click', () => this.toggleDarkMode());
             }
 
             initializeDarkMode() {
-                const isDark = localStorage.getItem('darkMode') === 'true';
+                const isDark = localStorage.getItem('dark-mode') === 'true' || 
+                              (!localStorage.getItem('dark-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                
                 if (isDark) {
                     document.documentElement.classList.add('dark');
                 }
@@ -341,15 +436,30 @@
 
             toggleDarkMode() {
                 const isDark = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('darkMode', isDark);
+                localStorage.setItem('dark-mode', isDark.toString());
             }
 
-            addAddress() {
+            loadSavedData() {
+                // Load savings goal
+                if (this.savingsGoal > 0) {
+                    document.getElementById('savingsGoal').value = this.savingsGoal.toFixed(8);
+                }
+
+                // Load addresses
+                this.renderAddressesList();
+                
+                // Refresh data if addresses exist
+                if (this.addresses.length > 0) {
+                    this.refreshAllData();
+                }
+            }
+
+            async addAddress() {
                 const input = document.getElementById('addressInput');
                 const address = input.value.trim();
                 const errorDiv = document.getElementById('addressError');
 
-                // Clear previous error
+                // Clear previous errors
                 errorDiv.classList.add('hidden');
 
                 if (!address) {
@@ -357,25 +467,26 @@
                     return;
                 }
 
-                // Validate address
-                const validation = BitcoinAddressValidator.validateAddress(address);
-                if (!validation.valid) {
-                    this.showError(validation.error);
+                if (!isValidBitcoinAddress(address)) {
+                    this.showError('Invalid Bitcoin address format');
                     return;
                 }
 
-                // Check if address already exists
-                if (this.addresses.has(address)) {
+                if (this.addresses.includes(address)) {
                     this.showError('Address already added');
                     return;
                 }
 
                 // Add address
-                this.addresses.add(address);
+                this.addresses.push(address);
+                localStorage.setItem('bitcoin-addresses', JSON.stringify(this.addresses));
+                
+                // Clear input
                 input.value = '';
-                this.saveToStorage();
+                
+                // Update UI
                 this.renderAddressesList();
-                this.refreshData();
+                this.refreshAllData();
             }
 
             showError(message) {
@@ -385,10 +496,10 @@
             }
 
             removeAddress(address) {
-                this.addresses.delete(address);
-                this.saveToStorage();
+                this.addresses = this.addresses.filter(addr => addr !== address);
+                localStorage.setItem('bitcoin-addresses', JSON.stringify(this.addresses));
                 this.renderAddressesList();
-                this.refreshData();
+                this.refreshAllData();
             }
 
             renderAddressesList() {
@@ -396,178 +507,169 @@
                 container.innerHTML = '';
 
                 this.addresses.forEach(address => {
-                    const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md';
-                    div.innerHTML = `
-                        <div class="flex-1">
-                            <div class="font-mono text-sm text-gray-900 dark:text-white">${address}</div>
-                        </div>
-                        <button 
-                            onclick="app.removeAddress('${address}')"
-                            class="ml-2 p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                        >
+                    const addressDiv = document.createElement('div');
+                    addressDiv.className = 'flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600';
+                    addressDiv.innerHTML = `
+                        <span class="font-mono text-sm text-gray-700 dark:text-gray-300 break-all">${address}</span>
+                        <button onclick="app.removeAddress('${address}')" class="ml-4 p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     `;
-                    container.appendChild(div);
+                    container.appendChild(addressDiv);
                 });
-
-                // Update addresses count
-                document.getElementById('totalAddresses').textContent = this.addresses.size;
             }
 
-            async refreshData() {
-                if (this.addresses.size === 0) {
-                    this.updateSummary();
+            async refreshAllData() {
+                if (this.addresses.length === 0) {
+                    this.updateBalanceDisplay();
+                    this.updateUtxosDisplay();
                     return;
                 }
-
-                const refreshBtn = document.getElementById('refreshBtn');
-                const refreshText = document.getElementById('refreshText');
-                const refreshSpinner = document.getElementById('refreshSpinner');
 
                 // Show loading state
-                refreshText.textContent = 'Loading...';
-                refreshSpinner.classList.remove('hidden');
-                refreshBtn.disabled = true;
+                this.setLoadingState(true);
 
                 try {
-                    this.utxos = [];
-                    
-                    for (const address of this.addresses) {
-                        try {
-                            const utxos = await this.apiClient.getAddressUTXOs(address);
-                            utxos.forEach(utxo => {
-                                utxo.address = address;
-                            });
-                            this.utxos.push(...utxos);
-                        } catch (error) {
-                            console.error(`Failed to fetch UTXOs for ${address}:`, error);
-                        }
-                    }
+                    // Fetch data for all addresses
+                    const addressPromises = this.addresses.map(address => 
+                        this.apiClient.getAddressInfo(address)
+                    );
+                    const utxoPromises = this.addresses.map(address => 
+                        this.apiClient.getAddressUtxos(address)
+                    );
 
-                    this.renderUTXOs();
-                    this.updateSummary();
-                    this.updateProgressBar();
+                    const [addressInfos, utxoArrays] = await Promise.all([
+                        Promise.all(addressPromises),
+                        Promise.all(utxoPromises)
+                    ]);
+
+                    // Calculate total balance
+                    this.totalBalance = addressInfos.reduce((total, info) => {
+                        const balance = info.chain_stats ? info.chain_stats.funded_txo_sum - info.chain_stats.spent_txo_sum : 0;
+                        return total + balance;
+                    }, 0) / 100000000; // Convert satoshis to BTC
+
+                    // Combine all UTXOs
+                    this.utxos = [];
+                    utxoArrays.forEach((utxos, index) => {
+                        const address = this.addresses[index];
+                        utxos.forEach(utxo => {
+                            this.utxos.push({
+                                ...utxo,
+                                address: address
+                            });
+                        });
+                    });
+
+                    // Update displays
+                    this.updateBalanceDisplay();
+                    this.updateUtxosDisplay();
+                    this.updateProgressDisplay();
 
                 } catch (error) {
-                    console.error('Failed to refresh data:', error);
-                    this.showError('Failed to fetch data. Please try again.');
+                    console.error('Error fetching data:', error);
+                    this.showError('Failed to fetch data from Bitcoin APIs');
                 } finally {
-                    // Hide loading state
-                    refreshText.textContent = 'Refresh';
-                    refreshSpinner.classList.add('hidden');
-                    refreshBtn.disabled = false;
+                    this.setLoadingState(false);
                 }
             }
 
-            renderUTXOs() {
-                const emptyState = document.getElementById('emptyState');
-                const utxosTable = document.getElementById('utxosTable');
-                const tbody = document.getElementById('utxosTableBody');
-
-                if (this.utxos.length === 0) {
-                    emptyState.classList.remove('hidden');
-                    utxosTable.classList.add('hidden');
-                    return;
-                }
-
-                emptyState.classList.add('hidden');
-                utxosTable.classList.remove('hidden');
-
-                tbody.innerHTML = '';
-
-                this.utxos.forEach(utxo => {
-                    const row = document.createElement('tr');
-                    const btcAmount = (utxo.value / 100000000).toFixed(8);
-                    const confirmations = utxo.status.confirmed ? 'Confirmed' : 'Unconfirmed';
-                    const statusClass = utxo.status.confirmed ? 'text-green-600' : 'text-yellow-600';
-
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-white">
-                            ${utxo.address.substring(0, 20)}...
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-white">
-                            <a href="https://mempool.space/tx/${utxo.txid}" target="_blank" class="text-bitcoin hover:text-bitcoin-dark">
-                                ${utxo.txid.substring(0, 16)}...
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-white">
-                            ${btcAmount}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            ${utxo.status.block_height ? `${utxo.status.block_height}` : 'N/A'}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm ${statusClass}">
-                            ${confirmations}
-                        </td>
-                    `;
-                    tbody.appendChild(row);
+            setLoadingState(loading) {
+                const refreshBtns = document.querySelectorAll('#refreshBtn, #refreshUtxosBtn');
+                refreshBtns.forEach(btn => {
+                    if (loading) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<div class="loading-spinner"></div>';
+                    } else {
+                        btn.disabled = false;
+                        btn.innerHTML = `
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span>Refresh</span>
+                        `;
+                    }
                 });
             }
 
-            updateSummary() {
-                const totalBalance = this.utxos.reduce((sum, utxo) => sum + utxo.value, 0) / 100000000;
-                const totalUTXOs = this.utxos.length;
-
-                document.getElementById('totalBalance').textContent = totalBalance.toFixed(8);
-                document.getElementById('totalUTXOs').textContent = totalUTXOs;
+            updateBalanceDisplay() {
+                document.getElementById('totalBalance').textContent = this.totalBalance.toFixed(8);
+                document.getElementById('totalUtxos').textContent = this.utxos.length.toString();
+                document.getElementById('totalAddresses').textContent = this.addresses.length.toString();
             }
 
-            updateProgressBar() {
-                const totalBalance = this.utxos.reduce((sum, utxo) => sum + utxo.value, 0) / 100000000;
+            updateProgressDisplay() {
                 const progressSection = document.getElementById('progressSection');
                 
                 if (this.savingsGoal > 0) {
                     progressSection.classList.remove('hidden');
                     
-                    const percentage = Math.min((totalBalance / this.savingsGoal) * 100, 100);
-                    const progressBar = document.getElementById('progressBar');
-                    const progressPercentage = document.getElementById('progressPercentage');
-                    const currentBalance = document.getElementById('currentBalance');
-                    const goalAmount = document.getElementById('goalAmount');
+                    const progress = Math.min((this.totalBalance / this.savingsGoal) * 100, 100);
                     
-                    progressBar.style.width = `${percentage}%`;
-                    progressPercentage.textContent = `${percentage.toFixed(1)}%`;
-                    currentBalance.textContent = `${totalBalance.toFixed(8)} BTC`;
-                    goalAmount.textContent = `${this.savingsGoal.toFixed(8)} BTC`;
+                    document.getElementById('progressPercentage').textContent = `${progress.toFixed(1)}%`;
+                    document.getElementById('progressBar').style.width = `${progress}%`;
+                    document.getElementById('currentAmount').textContent = `${this.totalBalance.toFixed(8)} BTC`;
+                    document.getElementById('targetAmount').textContent = `${this.savingsGoal.toFixed(8)} BTC`;
                 } else {
                     progressSection.classList.add('hidden');
                 }
             }
 
-            saveToStorage() {
-                const data = {
-                    addresses: Array.from(this.addresses),
-                    savingsGoal: this.savingsGoal
-                };
-                localStorage.setItem('bitcoinCheckbook', JSON.stringify(data));
-            }
+            updateUtxosDisplay() {
+                const noUtxosMessage = document.getElementById('noUtxosMessage');
+                const utxosTable = document.getElementById('utxosTable');
+                const tableBody = document.getElementById('utxosTableBody');
 
-            loadFromStorage() {
-                try {
-                    const data = JSON.parse(localStorage.getItem('bitcoinCheckbook') || '{}');
-                    this.addresses = new Set(data.addresses || []);
-                    this.savingsGoal = data.savingsGoal || 0;
-                    
-                    // Update UI
-                    document.getElementById('savingsGoal').value = this.savingsGoal || '';
-                    this.renderAddressesList();
-                    this.updateProgressBar();
-                    
-                    // Auto-refresh if addresses exist
-                    if (this.addresses.size > 0) {
-                        this.refreshData();
-                    }
-                } catch (error) {
-                    console.error('Failed to load from storage:', error);
+                if (this.utxos.length === 0) {
+                    noUtxosMessage.classList.remove('hidden');
+                    utxosTable.classList.add('hidden');
+                    return;
                 }
+
+                noUtxosMessage.classList.add('hidden');
+                utxosTable.classList.remove('hidden');
+
+                // Clear existing rows
+                tableBody.innerHTML = '';
+
+                // Add UTXO rows
+                this.utxos.forEach(utxo => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
+                    
+                    const confirmations = utxo.status && utxo.status.confirmed ? 
+                        (utxo.status.block_height ? `${Date.now() - utxo.status.block_time * 1000 > 0 ? Math.floor((Date.now() - utxo.status.block_time * 1000) / 600000) : 0}` : 'Unconfirmed') : 
+                        'Unconfirmed';
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-gray-100">
+                            ${utxo.address.substring(0, 20)}...
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">
+                            <a href="https://mempool.space/tx/${utxo.txid}" target="_blank" class="text-hodl-blue dark:text-bitcoin hover:underline">
+                                ${utxo.txid.substring(0, 20)}...
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-gray-100">
+                            ${(utxo.value / 100000000).toFixed(8)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                            ${utxo.status && utxo.status.block_height ? utxo.status.block_height : 'Pending'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${utxo.status && utxo.status.confirmed ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'}">
+                                ${utxo.status && utxo.status.confirmed ? 'Confirmed' : 'Pending'}
+                            </span>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
             }
         }
 
-        // Initialize application
+        // Initialize the application
         const app = new BitcoinCheckbook();
     </script>
 </body>
