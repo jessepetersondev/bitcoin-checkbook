@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Checkbook & Savings Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bitcoin: '#f7931a',
+                        'bitcoin-dark': '#e8851a'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #f7931a;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        ₿ Bitcoin Checkbook
+                    </h1>
+                </div>
+                <button id="darkModeToggle" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Address Input Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Add Bitcoin Addresses</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="addressInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Bitcoin Address
+                    </label>
+                    <div class="flex space-x-2">
+                        <input 
+                            type="text" 
+                            id="addressInput" 
+                            placeholder="Enter Bitcoin address (1..., 3..., or bc1...)"
+                            class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bitcoin focus:border-bitcoin dark:bg-gray-700 dark:text-white"
+                        >
+                        <button 
+                            id="addAddressBtn" 
+                            class="px-4 py-2 bg-bitcoin hover:bg-bitcoin-dark text-white font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-bitcoin focus:ring-offset-2"
+                        >
+                            Add Address
+                        </button>
+                    </div>
+                    <div id="addressError" class="mt-2 text-sm text-red-600 dark:text-red-400 hidden"></div>
+                </div>
+                
+                <!-- Added Addresses List -->
+                <div id="addressesList" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Savings Goal Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Savings Goal</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="savingsGoal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Target Amount (BTC)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="savingsGoal" 
+                        step="0.00000001"
+                        placeholder="0.00000000"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-bitcoin focus:border-bitcoin dark:bg-gray-700 dark:text-white"
+                    >
+                </div>
+                
+                <!-- Progress Bar -->
+                <div id="progressSection" class="hidden">
+                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        <span>Progress</span>
+                        <span id="progressPercentage">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                        <div id="progressBar" class="progress-bar bg-bitcoin h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-2">
+                        <span id="currentBalance">0.00000000 BTC</span>
+                        <span id="goalAmount">0.00000000 BTC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Balance Summary -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Balance Summary</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-2xl font-bold text-bitcoin" id="totalBalance">0.00000000</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Total Balance (BTC)</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600" id="totalUTXOs">0</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Total UTXOs</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600" id="totalAddresses">0</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Addresses</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UTXOs Table -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Unspent Transaction Outputs (UTXOs)</h2>
+                <button 
+                    id="refreshBtn" 
+                    class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                >
+                    <span id="refreshText">Refresh</span>
+                    <div id="refreshSpinner" class="loading-spinner hidden inline-block ml-2"></div>
+                </button>
+            </div>
+            
+            <div id="utxosContainer">
+                <div id="emptyState" class="text-center py-12 text-gray-500 dark:text-gray-400">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No UTXOs found</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add Bitcoin addresses to view their unspent outputs.</p>
+                </div>
+                
+                <div id="utxosTable" class="hidden overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Address</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Transaction ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount (BTC)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Confirmations</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="utxosTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Bitcoin Address Validation
+        class BitcoinAddressValidator {
+            static validateAddress(address) {
+                if (!address || typeof address !== 'string') {
+                    return { valid: false, error: 'Address is required' };
+                }
+
+                // Remove whitespace
+                address = address.trim();
+
+                // Check for empty address
+                if (address.length === 0) {
+                    return { valid: false, error: 'Address cannot be empty' };
+                }
+
+                // Legacy address (P2PKH) - starts with '1'
+                if (address.startsWith('1')) {
+                    if (address.length >= 26 && address.length <= 35) {
+                        if (this.isValidBase58(address)) {
+                            return { valid: true, type: 'P2PKH' };
+                        }
+                    }
+                    return { valid: false, error: 'Invalid legacy address format' };
+                }
+
+                // Script Hash address (P2SH) - starts with '3'
+                if (address.startsWith('3')) {
+                    if (address.length >= 26 && address.length <= 35) {
+                        if (this.isValidBase58(address)) {
+                            return { valid: true, type: 'P2SH' };
+                        }
+                    }
+                    return { valid: false, error: 'Invalid script hash address format' };
+                }
+
+                // Bech32 address (P2WPKH/P2WSH) - starts with 'bc1'
+                if (address.startsWith('bc1')) {
+                    if (address.length >= 42 && address.length <= 62) {
+                        if (this.isValidBech32(address)) {
+                            return { valid: true, type: 'Bech32' };
+                        }
+                    }
+                    return { valid: false, error: 'Invalid bech32 address format' };
+                }
+
+                return { valid: false, error: 'Unsupported address format' };
+            }
+
+            static isValidBase58(address) {
+                const base58Chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+                return address.split('').every(char => base58Chars.includes(char));
+            }
+
+            static isValidBech32(address) {
+                const bech32Chars = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+                const parts = address.split('1');
+                if (parts.length !== 2) return false;
+                const [hrp, data] = parts;
+                if (hrp !== 'bc') return false;
+                return data.split('').every(char => bech32Chars.includes(char));
+            }
+        }
+
+        // Bitcoin API Client
+        class BitcoinAPIClient {
+            constructor() {
+                this.primaryAPI = 'https://mempool.space/api';
+                this.fallbackAPI = 'https://blockstream.info/api';
+                this.currentAPI = this.primaryAPI;
+            }
+
+            async fetchWithFallback(endpoint) {
+                try {
+                    const response = await fetch(`${this.currentAPI}${endpoint}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.warn(`Primary API failed: ${error.message}, trying fallback...`);
+                    if (this.currentAPI === this.primaryAPI) {
+                        this.currentAPI = this.fallbackAPI;
+                        try {
+                            const response = await fetch(`${this.currentAPI}${endpoint}`);
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}`);
+                            }
+                            return await response.json();
+                        } catch (fallbackError) {
+                            this.currentAPI = this.primaryAPI; // Reset for next time
+                            throw new Error(`Both APIs failed: ${error.message}, ${fallbackError.message}`);
+                        }
+                    }
+                    throw error;
+                }
+            }
+
+            async getAddressInfo(address) {
+                return await this.fetchWithFallback(`/address/${address}`);
+            }
+
+            async getAddressUTXOs(address) {
+                return await this.fetchWithFallback(`/address/${address}/utxo`);
+            }
+        }
+
+        // Application State
+        class BitcoinCheckbook {
+            constructor() {
+                this.addresses = new Set();
+                this.utxos = [];
+                this.apiClient = new BitcoinAPIClient();
+                this.savingsGoal = 0;
+                this.loadFromStorage();
+                this.initializeEventListeners();
+                this.initializeDarkMode();
+            }
+
+            initializeEventListeners() {
+                // Add address button
+                document.getElementById('addAddressBtn').addEventListener('click', () => {
+                    this.addAddress();
+                });
+
+                // Enter key in address input
+                document.getElementById('addressInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addAddress();
+                    }
+                });
+
+                // Savings goal input
+                document.getElementById('savingsGoal').addEventListener('input', (e) => {
+                    this.savingsGoal = parseFloat(e.target.value) || 0;
+                    this.saveToStorage();
+                    this.updateProgressBar();
+                });
+
+                // Refresh button
+                document.getElementById('refreshBtn').addEventListener('click', () => {
+                    this.refreshData();
+                });
+
+                // Dark mode toggle
+                document.getElementById('darkModeToggle').addEventListener('click', () => {
+                    this.toggleDarkMode();
+                });
+            }
+
+            initializeDarkMode() {
+                const isDark = localStorage.getItem('darkMode') === 'true';
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                }
+            }
+
+            toggleDarkMode() {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('darkMode', isDark);
+            }
+
+            addAddress() {
+                const input = document.getElementById('addressInput');
+                const address = input.value.trim();
+                const errorDiv = document.getElementById('addressError');
+
+                // Clear previous error
+                errorDiv.classList.add('hidden');
+
+                if (!address) {
+                    this.showError('Please enter a Bitcoin address');
+                    return;
+                }
+
+                // Validate address
+                const validation = BitcoinAddressValidator.validateAddress(address);
+                if (!validation.valid) {
+                    this.showError(validation.error);
+                    return;
+                }
+
+                // Check if address already exists
+                if (this.addresses.has(address)) {
+                    this.showError('Address already added');
+                    return;
+                }
+
+                // Add address
+                this.addresses.add(address);
+                input.value = '';
+                this.saveToStorage();
+                this.renderAddressesList();
+                this.refreshData();
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('addressError');
+                errorDiv.textContent = message;
+                errorDiv.classList.remove('hidden');
+            }
+
+            removeAddress(address) {
+                this.addresses.delete(address);
+                this.saveToStorage();
+                this.renderAddressesList();
+                this.refreshData();
+            }
+
+            renderAddressesList() {
+                const container = document.getElementById('addressesList');
+                container.innerHTML = '';
+
+                this.addresses.forEach(address => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md';
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <div class="font-mono text-sm text-gray-900 dark:text-white">${address}</div>
+                        </div>
+                        <button 
+                            onclick="app.removeAddress('${address}')"
+                            class="ml-2 p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    `;
+                    container.appendChild(div);
+                });
+
+                // Update addresses count
+                document.getElementById('totalAddresses').textContent = this.addresses.size;
+            }
+
+            async refreshData() {
+                if (this.addresses.size === 0) {
+                    this.updateSummary();
+                    return;
+                }
+
+                const refreshBtn = document.getElementById('refreshBtn');
+                const refreshText = document.getElementById('refreshText');
+                const refreshSpinner = document.getElementById('refreshSpinner');
+
+                // Show loading state
+                refreshText.textContent = 'Loading...';
+                refreshSpinner.classList.remove('hidden');
+                refreshBtn.disabled = true;
+
+                try {
+                    this.utxos = [];
+                    
+                    for (const address of this.addresses) {
+                        try {
+                            const utxos = await this.apiClient.getAddressUTXOs(address);
+                            utxos.forEach(utxo => {
+                                utxo.address = address;
+                            });
+                            this.utxos.push(...utxos);
+                        } catch (error) {
+                            console.error(`Failed to fetch UTXOs for ${address}:`, error);
+                        }
+                    }
+
+                    this.renderUTXOs();
+                    this.updateSummary();
+                    this.updateProgressBar();
+
+                } catch (error) {
+                    console.error('Failed to refresh data:', error);
+                    this.showError('Failed to fetch data. Please try again.');
+                } finally {
+                    // Hide loading state
+                    refreshText.textContent = 'Refresh';
+                    refreshSpinner.classList.add('hidden');
+                    refreshBtn.disabled = false;
+                }
+            }
+
+            renderUTXOs() {
+                const emptyState = document.getElementById('emptyState');
+                const utxosTable = document.getElementById('utxosTable');
+                const tbody = document.getElementById('utxosTableBody');
+
+                if (this.utxos.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    utxosTable.classList.add('hidden');
+                    return;
+                }
+
+                emptyState.classList.add('hidden');
+                utxosTable.classList.remove('hidden');
+
+                tbody.innerHTML = '';
+
+                this.utxos.forEach(utxo => {
+                    const row = document.createElement('tr');
+                    const btcAmount = (utxo.value / 100000000).toFixed(8);
+                    const confirmations = utxo.status.confirmed ? 'Confirmed' : 'Unconfirmed';
+                    const statusClass = utxo.status.confirmed ? 'text-green-600' : 'text-yellow-600';
+
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-white">
+                            ${utxo.address.substring(0, 20)}...
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-white">
+                            <a href="https://mempool.space/tx/${utxo.txid}" target="_blank" class="text-bitcoin hover:text-bitcoin-dark">
+                                ${utxo.txid.substring(0, 16)}...
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-white">
+                            ${btcAmount}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            ${utxo.status.block_height ? `${utxo.status.block_height}` : 'N/A'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${statusClass}">
+                            ${confirmations}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            updateSummary() {
+                const totalBalance = this.utxos.reduce((sum, utxo) => sum + utxo.value, 0) / 100000000;
+                const totalUTXOs = this.utxos.length;
+
+                document.getElementById('totalBalance').textContent = totalBalance.toFixed(8);
+                document.getElementById('totalUTXOs').textContent = totalUTXOs;
+            }
+
+            updateProgressBar() {
+                const totalBalance = this.utxos.reduce((sum, utxo) => sum + utxo.value, 0) / 100000000;
+                const progressSection = document.getElementById('progressSection');
+                
+                if (this.savingsGoal > 0) {
+                    progressSection.classList.remove('hidden');
+                    
+                    const percentage = Math.min((totalBalance / this.savingsGoal) * 100, 100);
+                    const progressBar = document.getElementById('progressBar');
+                    const progressPercentage = document.getElementById('progressPercentage');
+                    const currentBalance = document.getElementById('currentBalance');
+                    const goalAmount = document.getElementById('goalAmount');
+                    
+                    progressBar.style.width = `${percentage}%`;
+                    progressPercentage.textContent = `${percentage.toFixed(1)}%`;
+                    currentBalance.textContent = `${totalBalance.toFixed(8)} BTC`;
+                    goalAmount.textContent = `${this.savingsGoal.toFixed(8)} BTC`;
+                } else {
+                    progressSection.classList.add('hidden');
+                }
+            }
+
+            saveToStorage() {
+                const data = {
+                    addresses: Array.from(this.addresses),
+                    savingsGoal: this.savingsGoal
+                };
+                localStorage.setItem('bitcoinCheckbook', JSON.stringify(data));
+            }
+
+            loadFromStorage() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('bitcoinCheckbook') || '{}');
+                    this.addresses = new Set(data.addresses || []);
+                    this.savingsGoal = data.savingsGoal || 0;
+                    
+                    // Update UI
+                    document.getElementById('savingsGoal').value = this.savingsGoal || '';
+                    this.renderAddressesList();
+                    this.updateProgressBar();
+                    
+                    // Auto-refresh if addresses exist
+                    if (this.addresses.size > 0) {
+                        this.refreshData();
+                    }
+                } catch (error) {
+                    console.error('Failed to load from storage:', error);
+                }
+            }
+        }
+
+        // Initialize application
+        const app = new BitcoinCheckbook();
+    </script>
+</body>
+</html>
+
